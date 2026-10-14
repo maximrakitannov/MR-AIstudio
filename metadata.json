@@ -1,0 +1,6 @@
+{
+  "name": "MR studio",
+  "description": "Портфолио и цифровая студия независимого создателя AI-приложений и веб-продуктов MR studio. Воплощаю идеи в работающие цифровые продукты.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
