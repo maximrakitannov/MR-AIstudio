@@ -1,7 +1,8 @@
 import React from 'react';
 import { PersonalResource } from '../types';
-import { Send, CreditCard, MessageSquare, Video, ExternalLink, QrCode as QrIcon, CheckCircle2, Sparkles } from 'lucide-react';
+import { Send, CreditCard, MessageSquare, Video, ExternalLink, QrCode as QrIcon, Sparkles } from 'lucide-react';
 import { trackEvent } from '../services/storage';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface ResourcesSectionProps {
   resources: PersonalResource[];
@@ -12,6 +13,7 @@ export const ResourcesSection: React.FC<ResourcesSectionProps> = ({
   resources,
   onShowQr
 }) => {
+  const { t } = useLanguage();
   const activeResources = resources
     .filter(r => r.enabled)
     .sort((a, b) => a.order - b.order);
@@ -40,22 +42,22 @@ export const ResourcesSection: React.FC<ResourcesSectionProps> = ({
   };
 
   return (
-    <section id="resources" className="py-20 bg-[#07090e] border-t border-slate-900 relative">
+    <section id="resources" className="py-20 bg-[#080d22] border-t border-slate-800/80 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-xs font-mono mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 text-xs font-mono mb-4">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>ОФИЦИАЛЬНЫЕ КАНАЛЫ</span>
+            <span>{t.resources_badge}</span>
           </div>
 
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-heading mb-4">
-            Мои ресурсы и точки контакта
+            {t.resources_header}
           </h2>
 
           <p className="text-base text-slate-300">
-            Официальные сервисные площадки студии. Здесь вы можете мгновенно связаться с поддержкой, ознакомиться с прайсом на Taplink или безопасно провести оплату.
+            {t.resources_subheader}
           </p>
         </div>
 
@@ -64,7 +66,7 @@ export const ResourcesSection: React.FC<ResourcesSectionProps> = ({
           {activeResources.map(resource => (
             <div
               key={resource.id}
-              className="flex flex-col justify-between p-6 rounded-2xl bg-slate-900/40 border border-slate-800/80 hover:border-cyan-500/40 hover:bg-slate-900/60 transition-all duration-300 group"
+              className="flex flex-col justify-between p-6 rounded-2xl bg-slate-900/40 border border-slate-800/80 hover:border-cyan-500/40 hover:bg-slate-900/60 transition-all duration-300 group shadow-lg"
             >
               <div>
                 <div className="flex items-center justify-between mb-4">
@@ -101,7 +103,7 @@ export const ResourcesSection: React.FC<ResourcesSectionProps> = ({
                   onClick={() => handleLinkClick(resource)}
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold shadow-md shadow-cyan-600/20 transition-all"
                 >
-                  <span>Открыть ресурс</span>
+                  <span>{t.btn_open_resource}</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
 
@@ -109,7 +111,7 @@ export const ResourcesSection: React.FC<ResourcesSectionProps> = ({
                   <button
                     onClick={() => onShowQr(resource.url, resource.name, resource.description)}
                     className="p-2 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-300 hover:text-white border border-slate-700 transition-colors"
-                    title="Показать QR-код для телефона"
+                    title={t.btn_qr_code}
                     aria-label="QR код"
                   >
                     <QrIcon className="w-4 h-4" />

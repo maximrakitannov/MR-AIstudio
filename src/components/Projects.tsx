@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Project } from '../types';
-import { ExternalLink, Eye, Sparkles, CheckCircle2, ArrowRight, ShieldCheck, Tag } from 'lucide-react';
+import { ExternalLink, Eye, Sparkles, CheckCircle2, ArrowRight, ShieldCheck } from 'lucide-react';
 import { trackEvent } from '../services/storage';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface ProjectsProps {
   projects: Project[];
@@ -15,13 +16,14 @@ export const Projects: React.FC<ProjectsProps> = ({
   onOrderSimilar
 }) => {
   const [activeCategory, setActiveCategory] = useState<string>('all');
+  const { t } = useLanguage();
 
   const categories = [
-    { id: 'all', label: 'Все проекты' },
-    { id: 'ai', label: 'AI & SaaS' },
-    { id: 'web', label: 'Веб-сервисы' },
-    { id: 'telegram', label: 'Telegram Mini Apps' },
-    { id: 'automation', label: 'Автоматизация & CRM' }
+    { id: 'all', label: t.cat_all },
+    { id: 'ai', label: t.cat_ai },
+    { id: 'web', label: t.cat_web },
+    { id: 'telegram', label: t.cat_telegram },
+    { id: 'automation', label: t.cat_automation }
   ];
 
   const filteredProjects = activeCategory === 'all'
@@ -38,22 +40,22 @@ export const Projects: React.FC<ProjectsProps> = ({
   };
 
   return (
-    <section id="projects" className="py-20 bg-[#06080d] border-t border-slate-900 relative">
+    <section id="projects" className="py-20 bg-[#070b1e] border-t border-slate-800/80 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-xs font-mono mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 text-xs font-mono mb-4">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>ПОРТФОЛИО РАЗРАБОТЧИКА</span>
+            <span>{t.projects_badge}</span>
           </div>
 
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-heading mb-4">
-            Мои проекты
+            {t.projects_header}
           </h2>
 
           <p className="text-base text-slate-300">
-            Реальные цифровые продукты, разработанные под конкретные задачи. От визуальных AI-платформ до высоконагруженных веб-сервисов и ботов.
+            {t.projects_subheader}
           </p>
         </div>
 
@@ -65,8 +67,8 @@ export const Projects: React.FC<ProjectsProps> = ({
               onClick={() => setActiveCategory(cat.id)}
               className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${
                 activeCategory === cat.id
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-lg shadow-cyan-950/50'
-                  : 'bg-slate-900/60 text-slate-400 hover:text-slate-200 hover:bg-slate-850 border border-slate-800'
+                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 shadow-lg shadow-cyan-950/50'
+                  : 'bg-slate-900/70 text-slate-400 hover:text-slate-200 hover:bg-slate-800 border border-slate-800'
               }`}
             >
               {cat.label}
@@ -79,9 +81,9 @@ export const Projects: React.FC<ProjectsProps> = ({
           {filteredProjects.map(project => (
             <div
               key={project.id}
-              className={`flex flex-col rounded-2xl bg-slate-900/40 border transition-all duration-300 overflow-hidden hover:border-cyan-500/40 hover:shadow-xl hover:shadow-cyan-950/30 group ${
+              className={`flex flex-col rounded-2xl bg-slate-900/40 border transition-all duration-300 overflow-hidden hover:border-cyan-500/40 hover:shadow-2xl hover:shadow-cyan-950/40 group ${
                 project.isReference
-                  ? 'border-cyan-500/40 bg-gradient-to-b from-slate-900/90 to-slate-950/80 ring-1 ring-cyan-500/20'
+                  ? 'border-cyan-500/40 bg-gradient-to-b from-[#0b1028]/90 to-slate-950/80 ring-1 ring-cyan-500/30'
                   : 'border-slate-800/80'
               }`}
             >
@@ -98,18 +100,18 @@ export const Projects: React.FC<ProjectsProps> = ({
 
                 {/* Status and Category badges */}
                 <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-                  <span className="px-3 py-1 rounded-lg text-xs font-semibold bg-slate-900/90 text-cyan-300 border border-cyan-500/30 backdrop-blur-md">
+                  <span className="px-3 py-1 rounded-lg text-xs font-semibold bg-slate-900/95 text-cyan-300 border border-cyan-500/30 backdrop-blur-md">
                     {project.category}
                   </span>
                   {project.isReference && (
-                    <span className="px-3 py-1 rounded-lg text-xs font-semibold bg-cyan-500 text-slate-950 font-mono shadow-md shadow-cyan-500/30">
-                      ★ Флагманский проект
+                    <span className="px-3 py-1 rounded-lg text-xs font-semibold bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-mono shadow-md shadow-cyan-500/30">
+                      {t.flagship_tag}
                     </span>
                   )}
                 </div>
 
                 <div className="absolute top-4 right-4">
-                  <span className="px-3 py-1 rounded-lg text-xs font-medium bg-emerald-950/90 text-emerald-300 border border-emerald-500/30 backdrop-blur-md">
+                  <span className="px-3 py-1 rounded-lg text-xs font-medium bg-emerald-950/95 text-emerald-300 border border-emerald-500/30 backdrop-blur-md">
                     {project.status}
                   </span>
                 </div>
@@ -128,8 +130,8 @@ export const Projects: React.FC<ProjectsProps> = ({
 
                   {/* Key functions preview */}
                   <div className="space-y-2 pt-2">
-                    <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 block">
-                      Ключевой функционал:
+                    <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 block font-mono">
+                      {t.key_functions_label}
                     </span>
                     <ul className="space-y-1.5">
                       {project.keyFunctions.slice(0, 3).map((fn, idx) => (
@@ -143,9 +145,9 @@ export const Projects: React.FC<ProjectsProps> = ({
                 </div>
 
                 {/* Safe Demo Indicator */}
-                <div className="p-2.5 rounded-lg bg-slate-950/60 border border-slate-800 text-[11px] text-slate-400 flex items-center gap-2">
+                <div className="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800 text-[11px] text-slate-400 flex items-center gap-2">
                   <ShieldCheck className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                  <span className="truncate">Безопасная демонстрационная среда без риска для приватных данных</span>
+                  <span className="truncate">{t.demo_safe_badge}</span>
                 </div>
 
                 {/* Actions */}
@@ -159,12 +161,12 @@ export const Projects: React.FC<ProjectsProps> = ({
                         onClick={(e) => handleDemoClick(project, e)}
                         className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold shadow-md shadow-cyan-600/20 transition-all"
                       >
-                        <span>Посмотреть демо</span>
+                        <span>{t.btn_view_demo}</span>
                         <ExternalLink className="w-3.5 h-3.5" />
                       </a>
                     ) : (
                       <span className="px-3 py-2 rounded-xl bg-slate-800 text-slate-400 text-xs font-medium">
-                        Демо по запросу
+                        {t.demo_by_request}
                       </span>
                     )}
 
@@ -173,7 +175,7 @@ export const Projects: React.FC<ProjectsProps> = ({
                       className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-200 border border-slate-700 text-xs font-semibold transition-all hover:text-white"
                     >
                       <Eye className="w-3.5 h-3.5 text-cyan-400" />
-                      <span>Подробнее</span>
+                      <span>{t.btn_details}</span>
                     </button>
                   </div>
 
@@ -181,7 +183,7 @@ export const Projects: React.FC<ProjectsProps> = ({
                     onClick={() => onOrderSimilar(project)}
                     className="inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-400 hover:text-cyan-300 hover:underline"
                   >
-                    <span>Заказать похожий</span>
+                    <span>{t.btn_order_similar}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>

@@ -68,12 +68,38 @@ export function saveResources(resources: PersonalResource[]): void {
 
 // ------------------- SITE CONFIG -------------------
 export function getSiteConfig(): SiteConfig {
-  return safeGet<SiteConfig>(STORAGE_KEYS.CONFIG, initialSiteConfig);
+  const cfg = safeGet<SiteConfig>(STORAGE_KEYS.CONFIG, initialSiteConfig);
+  // Auto-migrate if previous image was the older photo
+  if (cfg.heroImageUrl.includes('mr_hero_vr_1791469670367')) {
+    cfg.heroImageUrl = '/src/assets/images/mr_creator_vr_hero_1792226205130.jpg';
+    safeSet(STORAGE_KEYS.CONFIG, cfg);
+  }
+  return cfg;
 }
 
 export function saveSiteConfig(config: SiteConfig): void {
   safeSet(STORAGE_KEYS.CONFIG, config);
 }
+
+// ------------------- LANGUAGE STORAGE -------------------
+export const STORAGE_LANG_KEY = 'rakitannov_lang';
+
+export function getStoredLanguage(): string {
+  try {
+    return localStorage.getItem(STORAGE_LANG_KEY) || 'ru';
+  } catch {
+    return 'ru';
+  }
+}
+
+export function setStoredLanguage(lang: string): void {
+  try {
+    localStorage.setItem(STORAGE_LANG_KEY, lang);
+  } catch (e) {
+    console.warn('Failed to save language', e);
+  }
+}
+
 
 // ------------------- LEGAL DOCS -------------------
 export function getLegalDocuments(): LegalDocument[] {

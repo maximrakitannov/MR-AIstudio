@@ -16,6 +16,7 @@ import { Projects } from './components/Projects';
 import { ProjectDetailModal } from './components/ProjectDetailModal';
 import { Services } from './components/Services';
 import { WorkflowSection } from './components/WorkflowSection';
+import { SecuritySection } from './components/SecuritySection';
 import { ResourcesSection } from './components/ResourcesSection';
 import { OrderForm } from './components/OrderForm';
 import { Footer } from './components/Footer';
@@ -23,9 +24,11 @@ import { QRCodeModal } from './components/QRCodeModal';
 import { LegalModal } from './components/LegalModal';
 import { AdminPanel } from './components/AdminPanel';
 import { initialServices } from './data/initialData';
-import { Send, Sparkles } from 'lucide-react';
+import { LanguageProvider, useLanguage } from './i18n/LanguageContext';
+import { Send } from 'lucide-react';
 
-export default function App() {
+function AppContent() {
+  const { t } = useLanguage();
   const [config, setConfig] = useState<SiteConfig>(getSiteConfig);
   const [projects, setProjects] = useState<Project[]>(getProjects);
   const [resources, setResources] = useState<PersonalResource[]>(getResources);
@@ -90,9 +93,9 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#06080d] text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div className="min-h-screen bg-[#070b1e] text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
       
-      {/* Top Header */}
+      {/* Top Header with Multi-language Switcher */}
       <Header
         config={config}
         onOpenAdmin={() => {
@@ -105,7 +108,7 @@ export default function App() {
 
       {/* Main Content */}
       <main className="flex-1">
-        {/* Hero Section */}
+        {/* Hero Section with Front Cover Image (30-35 yr old man in VR modulating fractals) */}
         <Hero
           config={config}
           onExploreProjects={scrollToProjects}
@@ -130,6 +133,9 @@ export default function App() {
         <WorkflowSection
           onDiscussIdea={scrollToContacts}
         />
+
+        {/* Security & Client Data Ownership Standard */}
+        <SecuritySection />
 
         {/* Personal Resources & Touchpoints */}
         <ResourcesSection
@@ -164,11 +170,11 @@ export default function App() {
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => trackEvent('telegram_click', 'floating_bubble', config.telegramBotHandle)}
-          className="group flex items-center gap-2.5 px-4 py-3 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold text-xs sm:text-sm shadow-xl shadow-cyan-500/30 transition-all transform hover:scale-105"
-          title="Написать в Telegram Support Bot"
+          className="group flex items-center gap-2.5 px-4 py-3 rounded-full bg-gradient-to-r from-cyan-500 via-blue-600 to-violet-600 hover:from-cyan-400 hover:to-violet-500 text-white font-semibold text-xs sm:text-sm shadow-xl shadow-cyan-500/30 transition-all transform hover:scale-105"
+          title={t.btn_telegram_support}
         >
           <Send className="w-4 h-4 text-white animate-pulse" />
-          <span className="hidden sm:inline">Бот поддержки</span>
+          <span className="hidden sm:inline">{t.btn_telegram_support}</span>
         </a>
       </div>
 
@@ -215,5 +221,13 @@ export default function App() {
       />
 
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
   );
 }

@@ -5,6 +5,7 @@ import {
   Sliders, Database, Calculator, Briefcase, Workflow, 
   Send, Smartphone, Tablet, Sparkles, ArrowRight, Clock, Check
 } from 'lucide-react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface ServicesProps {
   services: ServiceItem[];
@@ -13,6 +14,7 @@ interface ServicesProps {
 
 export const Services: React.FC<ServicesProps> = ({ services, onSelectService }) => {
   const [filter, setFilter] = useState<'all' | 'web' | 'ai' | 'telegram' | 'automation'>('all');
+  const { t } = useLanguage();
 
   const getIcon = (iconName: string) => {
     switch (iconName) {
@@ -39,22 +41,22 @@ export const Services: React.FC<ServicesProps> = ({ services, onSelectService })
     : services.filter(s => s.category === filter);
 
   return (
-    <section id="services" className="py-20 bg-[#07090e] border-t border-slate-900 relative">
+    <section id="services" className="py-20 bg-[#080d22] border-t border-slate-800/80 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-xs font-mono mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 text-xs font-mono mb-4">
             <Cpu className="w-3.5 h-3.5" />
-            <span>КОМПЕТЕНЦИИ & РЕШЕНИЯ</span>
+            <span>{t.services_badge}</span>
           </div>
 
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-heading mb-4">
-            Услуги разработки
+            {t.services_header}
           </h2>
 
           <p className="text-base text-slate-300">
-            Создаю завершенные цифровые инструменты, решающие прикладные задачи бизнеса. Без затянутых сроков, на чистом стеке и с полной передачей прав.
+            {t.services_subheader}
           </p>
         </div>
 
@@ -64,51 +66,51 @@ export const Services: React.FC<ServicesProps> = ({ services, onSelectService })
             onClick={() => setFilter('all')}
             className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition-all ${
               filter === 'all'
-                ? 'bg-cyan-500 text-slate-950 font-bold shadow-md shadow-cyan-500/20'
-                : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold shadow-md shadow-cyan-500/25'
+                : 'bg-slate-900/80 text-slate-400 hover:text-white border border-slate-800'
             }`}
           >
-            Все направления ({services.length})
+            {t.filter_all} ({services.length})
           </button>
           <button
             onClick={() => setFilter('ai')}
             className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition-all ${
               filter === 'ai'
-                ? 'bg-cyan-500 text-slate-950 font-bold shadow-md shadow-cyan-500/20'
-                : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold shadow-md shadow-cyan-500/25'
+                : 'bg-slate-900/80 text-slate-400 hover:text-white border border-slate-800'
             }`}
           >
-            AI & Нейросети
+            {t.filter_ai}
           </button>
           <button
             onClick={() => setFilter('web')}
             className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition-all ${
               filter === 'web'
-                ? 'bg-cyan-500 text-slate-950 font-bold shadow-md shadow-cyan-500/20'
-                : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold shadow-md shadow-cyan-500/25'
+                : 'bg-slate-900/80 text-slate-400 hover:text-white border border-slate-800'
             }`}
           >
-            Веб-приложения & Сайты
+            {t.filter_web}
           </button>
           <button
             onClick={() => setFilter('telegram')}
             className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition-all ${
               filter === 'telegram'
-                ? 'bg-cyan-500 text-slate-950 font-bold shadow-md shadow-cyan-500/20'
-                : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold shadow-md shadow-cyan-500/25'
+                : 'bg-slate-900/80 text-slate-400 hover:text-white border border-slate-800'
             }`}
           >
-            Telegram & Боты
+            {t.filter_telegram}
           </button>
           <button
             onClick={() => setFilter('automation')}
             className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition-all ${
               filter === 'automation'
-                ? 'bg-cyan-500 text-slate-950 font-bold shadow-md shadow-cyan-500/20'
-                : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-bold shadow-md shadow-cyan-500/25'
+                : 'bg-slate-900/80 text-slate-400 hover:text-white border border-slate-800'
             }`}
           >
-            Автоматизация & Дашборды
+            {t.filter_automation}
           </button>
         </div>
 
@@ -117,7 +119,7 @@ export const Services: React.FC<ServicesProps> = ({ services, onSelectService })
           {filtered.map(service => (
             <div
               key={service.id}
-              className="flex flex-col justify-between p-6 rounded-2xl bg-slate-900/40 border border-slate-800/80 hover:border-cyan-500/40 hover:bg-slate-900/70 transition-all duration-300 group"
+              className="flex flex-col justify-between p-6 rounded-2xl bg-slate-900/40 border border-slate-800/80 hover:border-cyan-500/40 hover:bg-slate-900/70 transition-all duration-300 group shadow-lg"
             >
               <div>
                 <div className="flex items-center justify-between mb-4">
@@ -162,7 +164,7 @@ export const Services: React.FC<ServicesProps> = ({ services, onSelectService })
                   onClick={() => onSelectService(service)}
                   className="inline-flex items-center gap-1 text-xs font-semibold text-cyan-400 hover:text-cyan-300 group-hover:translate-x-0.5 transition-all"
                 >
-                  <span>Заказать</span>
+                  <span>{t.btn_order_service}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>

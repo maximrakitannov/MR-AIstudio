@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import QRCode from 'qrcode';
 import { X, Copy, Check, ExternalLink, QrCode as QrIcon } from 'lucide-react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface QRCodeModalProps {
   isOpen: boolean;
@@ -17,6 +18,7 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({
   url,
   description
 }) => {
+  const { t } = useLanguage();
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
   const [copied, setCopied] = useState<boolean>(false);
 
@@ -44,9 +46,9 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fade-in">
       <div 
-        className="relative w-full max-w-sm rounded-2xl bg-slate-900 border border-slate-700/80 p-6 shadow-2xl text-center"
+        className="relative w-full max-w-sm rounded-2xl bg-[#090d22] border border-cyan-500/30 p-6 shadow-2xl text-center"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -63,7 +65,7 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({
 
         <h3 className="text-xl font-bold text-white mb-1 font-heading">{title}</h3>
         {description && (
-          <p className="text-sm text-slate-400 mb-4">{description}</p>
+          <p className="text-xs text-slate-400 mb-4">{description}</p>
         )}
 
         {/* QR Code Container */}
@@ -72,30 +74,30 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({
             <img src={qrDataUrl} alt={`QR-код для ${title}`} className="w-56 h-56 mx-auto" />
           ) : (
             <div className="w-56 h-56 flex items-center justify-center text-slate-500 text-sm">
-              Генерация QR-кода...
+              Generating QR Code...
             </div>
           )}
         </div>
 
         <p className="text-xs text-slate-400 mb-4">
-          Наведите камеру смартфона, чтобы моментально открыть ссылку
+          {t.qr_modal_subtitle}
         </p>
 
         {/* Actions */}
         <div className="flex gap-2">
           <button
             onClick={handleCopy}
-            className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-200 border border-slate-700 text-sm font-medium transition-all"
+            className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-200 border border-slate-700 text-xs font-medium transition-all"
           >
             {copied ? (
               <>
                 <Check className="w-4 h-4 text-emerald-400" />
-                <span className="text-emerald-400">Скопировано</span>
+                <span className="text-emerald-400">{t.btn_copied}</span>
               </>
             ) : (
               <>
                 <Copy className="w-4 h-4" />
-                <span>Копировать</span>
+                <span>{t.btn_copy_link}</span>
               </>
             )}
           </button>
@@ -104,9 +106,9 @@ export const QRCodeModal: React.FC<QRCodeModalProps> = ({
             href={url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-sm font-semibold transition-all shadow-lg shadow-cyan-600/25"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-semibold transition-all shadow-lg shadow-cyan-600/25"
           >
-            <span>Перейти</span>
+            <span>{t.btn_go_to_link}</span>
             <ExternalLink className="w-4 h-4" />
           </a>
         </div>

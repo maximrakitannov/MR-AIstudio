@@ -14,7 +14,7 @@ export const initialSiteConfig: SiteConfig = {
   whatsappUrl: '',
   youtubeUrl: '',
   contactEmail: 'maximrakitannov@gmail.com',
-  heroImageUrl: '/src/assets/images/mr_hero_vr_1791469670367.jpg',
+  heroImageUrl: '/src/assets/images/mr_creator_vr_hero_1792226205130.jpg',
   seoTitle: 'MR studio — Воплощаю идеи в цифровые продукты с помощью AI',
   seoDescription: 'Создание сайтов, веб-сервисов, AI-инструментов, Telegram Mini Apps и панелей управления для бизнеса. Независимый AI-разработчик.'
 };

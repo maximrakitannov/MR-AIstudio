@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { SiteConfig, ServiceItem, Project } from '../types';
+import { SiteConfig } from '../types';
 import { createOrder, trackEvent } from '../services/storage';
-import { Send, CheckCircle2, AlertCircle, Sparkles, MessageSquare, ShieldCheck, CreditCard, ArrowRight } from 'lucide-react';
+import { Send, CheckCircle2, AlertCircle, Sparkles, ShieldCheck, CreditCard, ArrowRight } from 'lucide-react';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface OrderFormProps {
   config: SiteConfig;
@@ -16,21 +17,22 @@ export const OrderForm: React.FC<OrderFormProps> = ({
   prefilledIdea = '',
   onShowLegal
 }) => {
+  const { t } = useLanguage();
+
   const [name, setName] = useState('');
-  const [contactMethod, setContactMethod] = useState<'Telegram' | 'WhatsApp' | 'Телефон' | 'Email'>('Telegram');
+  const [contactMethod, setContactMethod] = useState<'Telegram' | 'WhatsApp' | 'Phone' | 'Email'>('Telegram');
   const [contactValue, setContactValue] = useState('');
   const [companyOrProject, setCompanyOrProject] = useState('');
-  const [projectType, setProjectType] = useState(prefilledType || 'AI-приложение или веб-сервис');
+  const [projectType, setProjectType] = useState(prefilledType || 'Custom AI Application');
   const [ideaDescription, setIdeaDescription] = useState(prefilledIdea || '');
   const [requiredFeatures, setRequiredFeatures] = useState('');
-  const [budget, setBudget] = useState('50 000 – 150 000 ₽');
+  const [budget, setBudget] = useState('$1,500 - $3,500 / 150 000 ₽');
   const [comment, setComment] = useState('');
   const [agreeTerms, setAgreeTerms] = useState(true);
 
   const [loading, setLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  // Sync if prefilled changes from outside (e.g. clicking "Заказать похожий")
   React.useEffect(() => {
     if (prefilledType) setProjectType(prefilledType);
     if (prefilledIdea) setIdeaDescription(prefilledIdea);
@@ -39,29 +41,28 @@ export const OrderForm: React.FC<OrderFormProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
-      setStatusMessage({ type: 'error', text: 'Пожалуйста, укажите ваше имя' });
+      setStatusMessage({ type: 'error', text: t.val_err_name });
       return;
     }
     if (!contactValue.trim()) {
-      setStatusMessage({ type: 'error', text: 'Пожалуйста, укажите контакт для связи (Telegram, телефон или почту)' });
+      setStatusMessage({ type: 'error', text: t.val_err_contact });
       return;
     }
     if (!ideaDescription.trim()) {
-      setStatusMessage({ type: 'error', text: 'Пожалуйста, кратко опишите вашу идею или задачу' });
+      setStatusMessage({ type: 'error', text: t.val_err_desc });
       return;
     }
     if (!agreeTerms) {
-      setStatusMessage({ type: 'error', text: 'Для отправки необходимо согласие с условиями обработки данных' });
+      setStatusMessage({ type: 'error', text: t.val_err_terms });
       return;
     }
 
     setLoading(true);
     setStatusMessage(null);
 
-    // Save order through storage service
     const res = createOrder({
       name: name.trim(),
-      contactMethod,
+      contactMethod: contactMethod as any,
       contactValue: contactValue.trim(),
       companyOrProject: companyOrProject.trim(),
       projectType,
@@ -74,8 +75,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
     setLoading(false);
 
     if (res.success) {
-      setStatusMessage({ type: 'success', text: res.message });
-      // Reset sensitive fields
+      setStatusMessage({ type: 'success', text: t.form_success });
       setIdeaDescription('');
       setRequiredFeatures('');
       setComment('');
@@ -85,7 +85,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
   };
 
   return (
-    <section id="contacts" className="py-20 bg-[#06080d] border-t border-slate-900 relative">
+    <section id="contacts" className="py-20 bg-[#070b1e] border-t border-slate-800/80 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
@@ -93,21 +93,21 @@ export const OrderForm: React.FC<OrderFormProps> = ({
           {/* Left Column: Quick Contact Info & Direct Links */}
           <div className="lg:col-span-5 space-y-8">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-xs font-mono mb-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 text-xs font-mono mb-4">
                 <Send className="w-3.5 h-3.5" />
-                <span>СВЯЗАТЬСЯ СО МНОЙ</span>
+                <span>{t.contact_badge}</span>
               </div>
 
               <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-heading mb-4">
-                Обсудим ваш проект
+                {t.contact_header}
               </h2>
 
               <p className="text-base text-slate-300 leading-relaxed">
-                Расскажите о вашей задаче. Мы разберем концепцию, определим технический стек и в короткие сроки создадим работающий MVP в AI Studio.
+                {t.contact_subheader}
               </p>
             </div>
 
-            {/* Direct Cards */}
+            {/* Direct Touchpoints Cards */}
             <div className="space-y-4">
               {/* Telegram Support Bot Card */}
               <a
@@ -115,14 +115,14 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => trackEvent('telegram_click', 'contact_support_bot', config.telegramBotHandle)}
-                className="flex items-center justify-between p-4 rounded-xl bg-slate-900/60 border border-cyan-500/30 hover:border-cyan-400 hover:bg-slate-900 transition-all group"
+                className="flex items-center justify-between p-4 rounded-xl bg-slate-900/60 border border-cyan-500/30 hover:border-cyan-400 hover:bg-slate-900 transition-all group shadow-md"
               >
                 <div className="flex items-center gap-3.5">
                   <div className="w-10 h-10 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 flex items-center justify-center group-hover:bg-cyan-500 group-hover:text-slate-950 transition-colors">
                     <Send className="w-5 h-5" />
                   </div>
                   <div>
-                    <div className="text-xs font-mono text-cyan-400 font-semibold">Telegram Support Bot</div>
+                    <div className="text-xs font-mono text-cyan-400 font-semibold">{t.contact_bot_title}</div>
                     <div className="text-sm font-bold text-white">{config.telegramBotHandle}</div>
                   </div>
                 </div>
@@ -135,14 +135,14 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => trackEvent('resource_click', 'contact_taplink', 'Taplink Page')}
-                className="flex items-center justify-between p-4 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-cyan-500/30 hover:bg-slate-900 transition-all group"
+                className="flex items-center justify-between p-4 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-cyan-500/30 hover:bg-slate-900 transition-all group shadow-md"
               >
                 <div className="flex items-center gap-3.5">
                   <div className="w-10 h-10 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 flex items-center justify-center group-hover:bg-cyan-500 group-hover:text-slate-950 transition-colors">
                     <CreditCard className="w-5 h-5" />
                   </div>
                   <div>
-                    <div className="text-xs font-mono text-slate-400 font-semibold">Оплата и Тарифы (Taplink)</div>
+                    <div className="text-xs font-mono text-slate-400 font-semibold">{t.contact_taplink_title}</div>
                     <div className="text-sm font-bold text-white">taplink.cc/maximrakitannov</div>
                   </div>
                 </div>
@@ -151,13 +151,13 @@ export const OrderForm: React.FC<OrderFormProps> = ({
             </div>
 
             {/* Guarantees Box */}
-            <div className="p-5 rounded-2xl bg-cyan-950/20 border border-cyan-500/20 space-y-3">
+            <div className="p-5 rounded-2xl bg-cyan-950/20 border border-cyan-500/25 space-y-3">
               <div className="flex items-center gap-2 text-cyan-300 font-semibold text-sm">
                 <ShieldCheck className="w-4 h-4" />
-                <span>Конфиденциальность и открытость</span>
+                <span>{t.privacy_guarantee_title}</span>
               </div>
               <p className="text-xs text-slate-300 leading-relaxed">
-                Ваша идея и контактные данные защищены. Информация не передается третьим лицам. После разработки вы получаете 100% права на готовый продукт и исходный код.
+                {t.privacy_guarantee_desc}
               </p>
             </div>
           </div>
@@ -167,7 +167,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
             <div className="p-6 sm:p-8 rounded-3xl bg-slate-900/40 border border-slate-800 shadow-2xl backdrop-blur-md">
               <h3 className="text-xl font-bold text-white font-heading mb-6 flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-cyan-400" />
-                <span>Заявка на разработку цифрового продукта</span>
+                <span>{t.form_title}</span>
               </h3>
 
               {statusMessage && (
@@ -192,27 +192,27 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Ваше имя <span className="text-cyan-400">*</span>
+                      {t.label_name} <span className="text-cyan-400">*</span>
                     </label>
                     <input
                       type="text"
                       required
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      placeholder="Максим"
+                      placeholder="Alex / Maxim"
                       className="w-full px-4 py-2.5 rounded-xl bg-slate-950/80 border border-slate-700/80 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-400 transition-colors"
                     />
                   </div>
 
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Компания / Название проекта
+                      {t.label_company}
                     </label>
                     <input
                       type="text"
                       value={companyOrProject}
                       onChange={(e) => setCompanyOrProject(e.target.value)}
-                      placeholder="Например: Магазин автозапчастей или FinTech стартап"
+                      placeholder="e.g. AI SaaS, Fitness Studio, E-commerce"
                       className="w-full px-4 py-2.5 rounded-xl bg-slate-950/80 border border-slate-700/80 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-400 transition-colors"
                     />
                   </div>
@@ -222,7 +222,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                 <div className="grid grid-cols-1 sm:grid-cols-12 gap-4">
                   <div className="sm:col-span-5">
                     <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Удобный способ связи <span className="text-cyan-400">*</span>
+                      {t.label_contact_method} <span className="text-cyan-400">*</span>
                     </label>
                     <select
                       value={contactMethod}
@@ -231,21 +231,21 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                     >
                       <option value="Telegram">Telegram</option>
                       <option value="WhatsApp">WhatsApp</option>
-                      <option value="Телефон">Телефон</option>
+                      <option value="Phone">Phone</option>
                       <option value="Email">Email</option>
                     </select>
                   </div>
 
                   <div className="sm:col-span-7">
                     <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Контактный юзернейм / номер / email <span className="text-cyan-400">*</span>
+                      {t.label_contact} <span className="text-cyan-400">*</span>
                     </label>
                     <input
                       type="text"
                       required
                       value={contactValue}
                       onChange={(e) => setContactValue(e.target.value)}
-                      placeholder={contactMethod === 'Telegram' ? '@username' : '+7 (999) 000-00-00'}
+                      placeholder={contactMethod === 'Telegram' ? '@username' : 'contact@example.com'}
                       className="w-full px-4 py-2.5 rounded-xl bg-slate-950/80 border border-slate-700/80 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-400 transition-colors"
                     />
                   </div>
@@ -255,38 +255,37 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Тип проекта
+                      {t.label_project_type}
                     </label>
                     <select
                       value={projectType}
                       onChange={(e) => setProjectType(e.target.value)}
                       className="w-full px-3 py-2.5 rounded-xl bg-slate-950/80 border border-slate-700/80 text-white text-sm focus:outline-none focus:border-cyan-400 transition-colors"
                     >
-                      <option value="AI-приложение или веб-сервис">AI-приложение или веб-сервис</option>
-                      <option value="Telegram Mini App / Бот">Telegram Mini App / Бот</option>
-                      <option value="Корпоративный сайт / Лендинг">Корпоративный сайт / Лендинг</option>
-                      <option value="Панель управления / Дашборд / CRM">Панель управления / Дашборд / CRM</option>
-                      <option value="Интерактивный калькулятор">Интерактивный калькулятор</option>
-                      <option value="Каталог товаров с корзиной">Каталог товаров с корзиной</option>
-                      <option value="Подготовка веб-проекта к Android">Подготовка веб-проекта к Android</option>
-                      <option value="Индивидуальное цифровое решение">Индивидуальное цифровое решение</option>
+                      <option value="Custom AI Application">Custom AI Application & Tool</option>
+                      <option value="Telegram Mini App">Telegram Mini App / Bot</option>
+                      <option value="Modern Web Application">Modern Web Application / SaaS</option>
+                      <option value="Admin Panel & CRM">Admin Dashboard / CRM</option>
+                      <option value="Interactive Calculator">Interactive Calculator / Configurator</option>
+                      <option value="E-Commerce & Catalog">E-Commerce & Product Catalog</option>
+                      <option value="Web to Android PWA">Web to Android Preparation</option>
                     </select>
                   </div>
 
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Ориентировочный бюджет
+                      {t.label_budget}
                     </label>
                     <select
                       value={budget}
                       onChange={(e) => setBudget(e.target.value)}
                       className="w-full px-3 py-2.5 rounded-xl bg-slate-950/80 border border-slate-700/80 text-white text-sm focus:outline-none focus:border-cyan-400 transition-colors"
                     >
-                      <option value="До 50 000 ₽">До 50 000 ₽ (быстрый MVP / калькулятор / бот)</option>
-                      <option value="50 000 – 150 000 ₽">50 000 – 150 000 ₽ (полноценный сайт / Mini App)</option>
-                      <option value="150 000 – 300 000 ₽">150 000 – 300 000 ₽ (AI-сервис / личный кабинет)</option>
-                      <option value="300 000+ ₽">300 000+ ₽ (масштабная цифровая экосистема)</option>
-                      <option value="Требуется оценка">Требуется предварительная оценка</option>
+                      <option value="Up to $800 / До 50 000 ₽">Up to $800 / До 50 000 ₽ (MVP / Calculator)</option>
+                      <option value="$800 - $2,500 / 50 000 – 150 000 ₽">$800 - $2,500 / 50 000 – 150 000 ₽ (Website / Mini App)</option>
+                      <option value="$2,500 - $5,000 / 150 000 – 300 000 ₽">$2,500 - $5,000 / 150 000 – 300 000 ₽ (AI SaaS / Portal)</option>
+                      <option value="$5,000+ / 300 000+ ₽">$5,000+ / 300 000+ ₽ (Enterprise Ecosystem)</option>
+                      <option value="Requires Evaluation">Requires Evaluation / Оценка</option>
                     </select>
                   </div>
                 </div>
@@ -294,14 +293,14 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                 {/* Idea Description */}
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                    Описание идеи или задачи <span className="text-cyan-400">*</span>
+                    {t.label_desc} <span className="text-cyan-400">*</span>
                   </label>
                   <textarea
                     rows={3}
                     required
                     value={ideaDescription}
                     onChange={(e) => setIdeaDescription(e.target.value)}
-                    placeholder="Какую задачу должен решать продукт? Кто им будет пользоваться?"
+                    placeholder="What problem does the product solve? Who are the target users?"
                     className="w-full px-4 py-2.5 rounded-xl bg-slate-950/80 border border-slate-700/80 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-400 transition-colors"
                   />
                 </div>
@@ -310,26 +309,26 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Необходимые функции (необязательно)
+                      {t.label_features}
                     </label>
                     <input
                       type="text"
                       value={requiredFeatures}
                       onChange={(e) => setRequiredFeatures(e.target.value)}
-                      placeholder="Например: прием платежей, личный кабинет, AI генерация"
+                      placeholder="e.g. Stripe/Crypto payments, AI Chat, Auth"
                       className="w-full px-4 py-2.5 rounded-xl bg-slate-950/80 border border-slate-700/80 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-400 transition-colors"
                     />
                   </div>
 
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Дополнительный комментарий
+                      {t.label_comment}
                     </label>
                     <input
                       type="text"
                       value={comment}
                       onChange={(e) => setComment(e.target.value)}
-                      placeholder="Дедлайн, ссылки на примеры..."
+                      placeholder="Desired deadline, reference links..."
                       className="w-full px-4 py-2.5 rounded-xl bg-slate-950/80 border border-slate-700/80 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-cyan-400 transition-colors"
                     />
                   </div>
@@ -345,21 +344,21 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                     className="mt-1 w-4 h-4 rounded text-cyan-500 focus:ring-cyan-400 border-slate-700 bg-slate-950"
                   />
                   <label htmlFor="agreeTerms" className="text-xs text-slate-400 leading-relaxed">
-                    Я согласен с{' '}
+                    {t.label_agree_terms}{' '}
                     <button
                       type="button"
                       onClick={() => onShowLegal('privacy-policy')}
                       className="text-cyan-400 hover:underline"
                     >
-                      Политикой конфиденциальности
+                      Privacy Policy
                     </button>{' '}
-                    и{' '}
+                    {t.and_text}{' '}
                     <button
                       type="button"
                       onClick={() => onShowLegal('terms-of-service')}
                       className="text-cyan-400 hover:underline"
                     >
-                      Пользовательским соглашением
+                      Terms of Service
                     </button>
                   </label>
                 </div>
@@ -368,14 +367,14 @@ export const OrderForm: React.FC<OrderFormProps> = ({
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 disabled:opacity-50 text-white font-bold text-sm shadow-xl shadow-cyan-500/25 transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2"
+                  className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-600 to-violet-600 hover:from-cyan-400 hover:to-violet-500 disabled:opacity-50 text-white font-bold text-sm shadow-xl shadow-cyan-500/25 transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2"
                 >
                   {loading ? (
-                    <span>Отправка данных...</span>
+                    <span>{t.btn_submitting}</span>
                   ) : (
                     <>
                       <Sparkles className="w-4 h-4" />
-                      <span>Отправить заявку на разработку</span>
+                      <span>{t.btn_submit}</span>
                     </>
                   )}
                 </button>
